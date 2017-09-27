@@ -52,7 +52,13 @@ def movement_control(pos):
     try:
         posNum = int(pos)
     except Exception as e:
+<<<<<<< HEAD
         return statement('Exception : Position not valid')
+=======
+        return statement('Position not valid')
+    if( pos > NPOS or pos < 0 ):
+        return statement('Position not valid')
+>>>>>>> origin/master
     
     if( pos > NPOS or pos < 0 ):
         return statement('Position not valid')
@@ -74,7 +80,10 @@ def movement_control(pos):
         GPIO.output(posLed[posStatus], LOW)
         posStatus = (posStatus + direction) % NPOS
         GPIO.output(posLed[posStatus], HIGH)   
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
     return statement('Moved to position {}'.format(pos))
 
 if __name__ == '__main__':
