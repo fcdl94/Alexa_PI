@@ -14,8 +14,8 @@ posStatus = 0
 for x in range(0, NPOS):
     GPIO.setup(posLed[x], GPIO.OUT)
     GPIO.output(posLed[x], GPIO.LOW)
-GPIO.setup(moveLed, GPIO.OUT) 
-GPIO.output(moveLed, GPIO.LOW)
+GPIO.setup(movLed, GPIO.OUT) 
+GPIO.output(movLed, GPIO.LOW)
 GPIO.output(posLed[0], GPIO.HIGH)
 
 
@@ -53,9 +53,6 @@ def movement_control(pos):
         pos = int(pos)
     except Exception as e:
         return statement('Exception : Position not valid')
-
-    if( pos > NPOS or pos < 0 ):
-        return statement('Position not valid')
     
     if( pos > NPOS or pos < 0 ):
         return statement('Position not valid')
