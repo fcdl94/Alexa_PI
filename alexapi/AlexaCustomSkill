@@ -18,7 +18,6 @@ GPIO.setup(movLed, GPIO.OUT)
 GPIO.output(movLed, GPIO.LOW)
 GPIO.output(posLed[0], GPIO.HIGH)
 
-
 app = Flask(__name__)
 ask = Ask(app, '/')
 
@@ -47,13 +46,16 @@ def gpio_control(status, pin):
 
 @ask.intent("MovementIntent", mapping={'pos':'position'})
 def movement_control(pos):
-       
+    global NPOS
+    global posLed 
+    global movLed 
+    global posStatus 
     direction = 0
     try:
         pos = int(pos)
     except Exception as e:
         return statement('Exception : Position not valid')
-    
+
     if( pos > NPOS or pos < 0 ):
         return statement('Position not valid')
     if (pos == posStatus):
