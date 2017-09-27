@@ -7,10 +7,6 @@ import logging
 import time
 
 GPIO.setmode(GPIO.BCM)
-
-app = Flask(__name__)
-ask = Ask(app, '/')
-
 NPOS = 4
 posLed = [5,6,13,19]
 movLed = 23
@@ -21,6 +17,10 @@ for x in range(0, NPOS):
 GPIO.setup(moveLed, GPIO.OUT) 
 GPIO.output(moveLed, GPIO.LOW)
 GPIO.output(posLed[0], GPIO.HIGH)
+
+
+app = Flask(__name__)
+ask = Ask(app, '/')
 
 
 logging.getLogger("flask_ask").setLevel(logging.DEBUG)
@@ -45,20 +45,17 @@ def gpio_control(status, pin):
 
     return statement('Turning pin {} {}'.format(pin, status))
 
-@ask.intent("MovementIntent", mapping={'position':'pos'})
+@ask.intent("MovementIntent", mapping={'pos':'position'})
 def movement_control(pos):
        
     direction = 0
     try:
-        posNum = int(pos)
+        pos = int(pos)
     except Exception as e:
-<<<<<<< HEAD
         return statement('Exception : Position not valid')
-=======
-        return statement('Position not valid')
+
     if( pos > NPOS or pos < 0 ):
         return statement('Position not valid')
->>>>>>> origin/master
     
     if( pos > NPOS or pos < 0 ):
         return statement('Position not valid')
@@ -80,10 +77,6 @@ def movement_control(pos):
         GPIO.output(posLed[posStatus], LOW)
         posStatus = (posStatus + direction) % NPOS
         GPIO.output(posLed[posStatus], HIGH)   
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
     return statement('Moved to position {}'.format(pos))
 
 if __name__ == '__main__':
