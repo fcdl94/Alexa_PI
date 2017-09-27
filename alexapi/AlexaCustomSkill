@@ -4,6 +4,7 @@ from flask import Flask
 from flask_ask import Ask, statement, convert_errors
 import RPi.GPIO as GPIO
 import logging
+import utils.py
 
 GPIO.setmode(GPIO.BCM)
 
@@ -11,7 +12,11 @@ app = Flask(__name__)
 ask = Ask(app, '/')
 
 logging.getLogger("flask_ask").setLevel(logging.DEBUG)
-
+socket = socket.socket(
+    socket.AF_INET, socket.SOCK_STREAM
+    )
+socket.bind((socket.gethostname(), 8080))
+socket.listen(1)
 @ask.intent('GPIOControlIntent', mapping={'status': 'status', 'pin': 'pin'})
 def gpio_control(status, pin):
 
@@ -27,5 +32,13 @@ def gpio_control(status, pin):
 
     return statement('Turning pin {} {}'.format(pin, status))
 
+@ask.intent("Picture")
+def picture():
+    camera.take_picture()
+
+@ask.intent("Stream")
+def stream:
+
 if __name__ == '__main__':
     app.run()
+    camera = CameraManager()
