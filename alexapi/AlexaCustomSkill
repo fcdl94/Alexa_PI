@@ -44,7 +44,7 @@ def gpio_control(status, pin):
 
     return statement('Turning pin {} {}'.format(pin, status))
 
-@ask.intent("MovementIntent", mapping:'position':'pos')
+@ask.intent("MovementIntent", mapping={'position':'pos'})
 def movement_control(pos):
        
     direction = 0
