@@ -52,7 +52,7 @@ def movement_control(pos):
         posNum = int(pos)
     except Exception as e:
         return statement('Position not valid')
-    if( pos > NPOS and pos < 0 ):
+    if( pos > NPOS or pos < 0 ):
         return statement('Position not valid')
     
     if (pos == posStatus):
