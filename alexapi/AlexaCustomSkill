@@ -15,7 +15,7 @@ posStatus = 0
 for x in range(0, NPOS):
     GPIO.setup(posLed[x], GPIO.OUT)
     GPIO.output(posLed[x], GPIO.LOW)
-GPIO.setup(movLed, GPIO.OUT) 
+GPIO.setup(movLed, GPIO.OUT)
 GPIO.output(movLed, GPIO.LOW)
 GPIO.output(posLed[0], GPIO.HIGH)
 
@@ -28,7 +28,7 @@ logging.getLogger("flask_ask").setLevel(logging.DEBUG)
 @ask.launch
 def start_skill():
     welcome_message="Welcome to RAX!"
-    return question(welcome_message)  
+    return question(welcome_message)
 
 @ask.intent('GPIOControlIntent', mapping={'status': 'status', 'pin': 'pin'})
 def gpio_control(status, pin):
@@ -61,9 +61,9 @@ def stop:
 @ask.intent("MovementIntent", mapping={'pos':'position'})
 def movement_control(pos):
     global NPOS
-    global posLed 
-    global movLed 
-    global posStatus 
+    global posLed
+    global movLed
+    global posStatus
     direction = 0
     try:
         pos = int(pos)
@@ -71,7 +71,7 @@ def movement_control(pos):
         return statement('Exception : Position not valid')
 
     if( pos > NPOS or pos < 0 ):
-        return statement('Position not valid')
+        return statement('Position not valid - given {}'.format(pos))
     if (pos == posStatus):
         return statement('I am already there')
 
@@ -80,17 +80,18 @@ def movement_control(pos):
     else :
         direction = +1
 
-    while posStatus < pos :
-        starTime = 0
+    while posStatus != pos :
+        starTime = time.time()
         while (time.time() - starTime) < 1 :
-            GPIO.output(movLed, HIGH)
+            GPIO.output(movLed,GPIO.HIGH)
             time.sleep(0.1)
-            GPIO.output(movLed, LOW)
+            GPIO.output(movLed, GPIO.LOW)
             time.sleep(0.1)
-        GPIO.output(posLed[posStatus], LOW)
+        GPIO.output(posLed[posStatus],GPIO.LOW)
         posStatus = (posStatus + direction) % NPOS
-        GPIO.output(posLed[posStatus], HIGH)   
-    return statement('Moved to position {}'.format(pos))
+        GPIO.output(posLed[posStatus], GPIO.HIGH)
+        starTime = time.time()
+    return statement('Moved to position {}'.format(posStatus))
 
 
 if __name__ == '__main__':
@@ -98,4 +99,3 @@ if __name__ == '__main__':
     socket.connect("10.0.1.14", "8000")
     camera = CameraManager(socket)
     app.run()
-    
