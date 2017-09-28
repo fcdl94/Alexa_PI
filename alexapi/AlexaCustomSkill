@@ -13,12 +13,15 @@ NPOS = 4
 posLed = [5,6,13,19]
 movLed = 23
 posStatus = 0
+flashLed = 4
 for x in range(0, NPOS):
     GPIO.setup(posLed[x], GPIO.OUT)
     GPIO.output(posLed[x], GPIO.LOW)
 GPIO.setup(movLed, GPIO.OUT)
 GPIO.output(movLed, GPIO.LOW)
 GPIO.output(posLed[0], GPIO.HIGH)
+GPIO.setup(flashLed, GPIO.OUT)
+GPIO.output(flashLed, GPIO.LOW)
 
 app = Flask(__name__)
 ask = Ask(app, '/')
@@ -51,16 +54,19 @@ def gpio_control(status, pin):
 def picture():
     global camera
     camera.take_picture()
+    return statement('Picture taken')
 
 @ask.intent("Stream")
 def stream():
     global camera
     camera.start_video_stream()
+    return statement('Streaming started')
 
 @ask.intent("Stop")
 def stop():
     global camera
     camera.stop_video_stream()
+    return statement('Streaming stopped')
 
 @ask.intent("MovementIntent", mapping={'pos':'position'})
 def movement_control(pos):
@@ -71,6 +77,7 @@ def movement_control(pos):
     direction = 0
     try:
         pos = int(pos)
+        pos -= 1
     except Exception as e:
         return statement('Exception : Position not valid')
 
@@ -79,7 +86,7 @@ def movement_control(pos):
     if (pos == posStatus):
         return statement('I am already there')
 
-    if ( (posStatus - pos) % NPOS < float(NPOS/2) ):
+    if ( posStatus > pos ):
         direction = -1
     else :
         direction = +1
@@ -92,11 +99,22 @@ def movement_control(pos):
             GPIO.output(movLed, GPIO.LOW)
             time.sleep(0.1)
         GPIO.output(posLed[posStatus],GPIO.LOW)
-        posStatus = (posStatus + direction) % NPOS
+        posStatus = (posStatus + direction)
         GPIO.output(posLed[posStatus], GPIO.HIGH)
         starTime = time.time()
     return statement('Moved to position {}'.format(posStatus))
 
+@ask.intent("FlashStartIntent")
+def flashing():
+    global flashLed
+    GPIO.output(flashLed, GPIO.HIGH)
+    return statement('Flashing started.')
+
+@ask.intent("FlashStopIntent")
+def stop_flashing():
+    global flashLed
+    GPIO.output(flashLed, GPIO.LOW)
+    return statement('Flashing ended.')
 
 if __name__ == '__main__':
     global camera
