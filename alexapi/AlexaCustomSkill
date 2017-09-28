@@ -38,7 +38,15 @@ def picture():
 
 @ask.intent("Stream")
 def stream:
+    camera.start_recording()
+
+@ask.intent("Stop")
+def stop:
+    camera.stop_recording()
 
 if __name__ == '__main__':
     app.run()
-    camera = CameraManager()
+    socket = socket.socket()
+    socket.connect("10.0.1.14", "8000")
+    camera = CameraManager(socket)
+    
