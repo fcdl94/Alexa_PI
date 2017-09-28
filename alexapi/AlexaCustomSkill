@@ -4,6 +4,7 @@ from flask import Flask
 from flask_ask import Ask, statement, convert_errors
 import RPi.GPIO as GPIO
 import logging
+import utils.py
 import time
 
 GPIO.setmode(GPIO.BCM)
@@ -44,6 +45,19 @@ def gpio_control(status, pin):
 
     return statement('Turning pin {} {}'.format(pin, status))
 
+
+@ask.intent("Picture")
+def picture():
+    camera.take_picture()
+
+@ask.intent("Stream")
+def stream:
+    camera.start_recording()
+
+@ask.intent("Stop")
+def stop:
+    camera.stop_recording()
+
 @ask.intent("MovementIntent", mapping={'pos':'position'})
 def movement_control(pos):
     global NPOS
@@ -79,5 +93,9 @@ def movement_control(pos):
         starTime = time.time()
     return statement('Moved to position {}'.format(posStatus))
 
+
 if __name__ == '__main__':
-    app.run( )
+    socket = socket.socket()
+    socket.connect("10.0.1.14", "8000")
+    camera = CameraManager(socket)
+    app.run()

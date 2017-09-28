@@ -132,10 +132,4 @@ This is mainly a test of doing bugfix releases.
 
 [Unreleased]: https://github.com/alexa-pi/AlexaPi/compare/v1.5...HEAD
 [1.5]: https://github.com/alexa-pi/AlexaPi/compare/v1.4...v1.5
-[1.4]: https://github.com/alexa-pi/AlexaPi/compare/v1.3...v1.4
-[1.3.1]: https://github.com/alexa-pi/AlexaPi/compare/v1.3...v1.3.1
-[1.3]: https://github.com/alexa-pi/AlexaPi/compare/v1.2...v1.3
-[1.2]: https://github.com/alexa-pi/AlexaPi/compare/v1.1...v1.2
-[Documentation]: https://github.com/alexa-pi/AlexaPi/wiki/
-[Devices]: https://github.com/alexa-pi/AlexaPi/wiki/Devices
-[Configuration changes]: https://github.com/alexa-pi/AlexaPi/wiki/Configuration-changes
+[1.4]: https://github.com/alexa-pi/Alexa
