@@ -5,18 +5,31 @@ from flask_ask import Ask, statement, convert_errors
 import RPi.GPIO as GPIO
 import logging
 import utils.py
+import time
 
 GPIO.setmode(GPIO.BCM)
+NPOS = 4
+posLed = [5,6,13,19]
+movLed = 23
+posStatus = 0
+for x in range(0, NPOS):
+    GPIO.setup(posLed[x], GPIO.OUT)
+    GPIO.output(posLed[x], GPIO.LOW)
+GPIO.setup(movLed, GPIO.OUT) 
+GPIO.output(movLed, GPIO.LOW)
+GPIO.output(posLed[0], GPIO.HIGH)
 
 app = Flask(__name__)
 ask = Ask(app, '/')
 
+
 logging.getLogger("flask_ask").setLevel(logging.DEBUG)
-socket = socket.socket(
-    socket.AF_INET, socket.SOCK_STREAM
-    )
-socket.bind((socket.gethostname(), 8080))
-socket.listen(1)
+
+@ask.launch
+def start_skill():
+    welcome_message="Welcome to RAX!"
+    return question(welcome_message)  
+
 @ask.intent('GPIOControlIntent', mapping={'status': 'status', 'pin': 'pin'})
 def gpio_control(status, pin):
 
@@ -32,6 +45,7 @@ def gpio_control(status, pin):
 
     return statement('Turning pin {} {}'.format(pin, status))
 
+
 @ask.intent("Picture")
 def picture():
     camera.take_picture()
@@ -44,9 +58,44 @@ def stream:
 def stop:
     camera.stop_recording()
 
+@ask.intent("MovementIntent", mapping={'pos':'position'})
+def movement_control(pos):
+    global NPOS
+    global posLed 
+    global movLed 
+    global posStatus 
+    direction = 0
+    try:
+        pos = int(pos)
+    except Exception as e:
+        return statement('Exception : Position not valid')
+
+    if( pos > NPOS or pos < 0 ):
+        return statement('Position not valid')
+    if (pos == posStatus):
+        return statement('I am already there')
+
+    if ( (posStatus - pos) % NPOS < float(NPOS/2) ):
+        direction = -1
+    else :
+        direction = +1
+
+    while posStatus < pos :
+        starTime = 0
+        while (time.time() - starTime) < 1 :
+            GPIO.output(movLed, HIGH)
+            time.sleep(0.1)
+            GPIO.output(movLed, LOW)
+            time.sleep(0.1)
+        GPIO.output(posLed[posStatus], LOW)
+        posStatus = (posStatus + direction) % NPOS
+        GPIO.output(posLed[posStatus], HIGH)   
+    return statement('Moved to position {}'.format(pos))
+
+
 if __name__ == '__main__':
-    app.run()
     socket = socket.socket()
     socket.connect("10.0.1.14", "8000")
     camera = CameraManager(socket)
+    app.run()
     

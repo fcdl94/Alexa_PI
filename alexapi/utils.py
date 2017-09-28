@@ -1,15 +1,17 @@
 import picamera
+import socket
 
 class CameraManager:
-	def __init__(self):
+	def __init__(self, socket):
 		self.camera=picamera.PiCamera()
-		self.socket=None
+		self.socket=socket
 		self.conn=None
 	def take_picture(self):
 		self.camera.capture('tmp.jpg')
-	def start_video_stream(socket):
-		self.socket = socket
-		self.conn = socket.accept()[0].makefile('f')
+	def start_video_stream():
+                self.camera.resolution(640, 480)
+                self.camera.framerate(24)
+		self.conn = self.socket.makefile('f')
 		self.camera.start_recording(conn, format='h264')
 	def stop_video_stream():
 		try:
@@ -17,5 +19,3 @@ class CameraManager:
 		finally:
 			self.conn.close()
 			self.conn = None
-			self.socket.close()
-			self.socket = None
