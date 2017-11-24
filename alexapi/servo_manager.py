@@ -35,9 +35,10 @@ class servomanager():
             self.pwm.set_pwm(0,0,self.servo_max)
             time.sleep(1)
 
-servo=servomanager(0x54,1)
-servo.movto(1)
-servo.movto(3)
-servo.movto(2)
-servo.movto(3)
-servo.movto(1)
+#esempio funzionamento
+#servo=servomanager(0x54,1)
+#servo.movto(1)
+#servo.movto(3)
+##servo.movto(2)
+##servo.movto(3)
+#servo.movto(1)
