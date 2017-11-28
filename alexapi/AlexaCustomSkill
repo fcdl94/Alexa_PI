@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
+import logging
+from camera_manager import CameraManager
+import time
+import socket
 from flask import Flask
 from flask_ask import Ask, statement, convert_errors
 import RPi.GPIO as GPIO
-import logging
-from utils import CameraManager
-import time
-import socket
 
 GPIO.setmode(GPIO.BCM)
 NPOS = 4
