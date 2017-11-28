@@ -7,9 +7,10 @@ import socket
 from flask import Flask
 from flask_ask import Ask, statement, convert_errors
 import RPi.GPIO as GPIO
+from servo_manager import servomanager
 
 GPIO.setmode(GPIO.BCM)
-NPOS = 4
+NPOS = 3
 posLed = [5,6,13,19]
 movLed = 23
 posStatus = 0
@@ -74,10 +75,10 @@ def movement_control(pos):
     global posLed
     global movLed
     global posStatus
+    global servo
     direction = 0
     try:
         pos = int(pos)
-        pos -= 1
     except Exception as e:
         return statement('Exception : Position not valid')
 
@@ -85,23 +86,7 @@ def movement_control(pos):
         return statement('Position not valid - given {}'.format(pos))
     if (pos == posStatus):
         return statement('I am already there')
-
-    if ( posStatus > pos ):
-        direction = -1
-    else :
-        direction = +1
-
-    while posStatus != pos :
-        starTime = time.time()
-        while (time.time() - starTime) < 1 :
-            GPIO.output(movLed,GPIO.HIGH)
-            time.sleep(0.1)
-            GPIO.output(movLed, GPIO.LOW)
-            time.sleep(0.1)
-        GPIO.output(posLed[posStatus],GPIO.LOW)
-        posStatus = (posStatus + direction)
-        GPIO.output(posLed[posStatus], GPIO.HIGH)
-        starTime = time.time()
+    servo.movto(pos)
     return statement('Moved to position {}'.format(posStatus))
 
 @ask.intent("FlashStartIntent")
@@ -118,7 +103,9 @@ def stop_flashing():
 
 if __name__ == '__main__':
     global camera
+    global servo
     soc = socket.socket()
     soc.connect(("10.0.1.12", 8000))
     camera = CameraManager(soc)
+    servo=servomanager(0x54,1)
     app.run()

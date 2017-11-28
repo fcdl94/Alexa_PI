@@ -18,7 +18,7 @@
 import Adafruit_PCA9685 as pca
 import time
 
-class servomanager():
+class servomanager:
     def __init__(self,input_address,bus_number):
         self.pwm=pca.PCA9685(address=input_address,busnum=bus_number)
         self.pwm.set_pwm_freq(60)
